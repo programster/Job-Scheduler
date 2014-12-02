@@ -2,8 +2,8 @@ Job-Scheduler
 =============
 A task scheduling program written in Java that uses JSON responses. Optimized for multi-threaded handling of many simultaneous requests. This application aims to categorize tasks based on what other tasks each task is dependent on having finished before they can be made available. It aims to prioritize tasks that unlock the most other tasks first in order to prevent bottlenecks. Thus this is not a FIFO style queing program, but one built for overall speed.#
 
-Installation
-============
+Installation and Setup (Docker)
+================
 This project makes use of docker to make deployment incredibly simple and easy. This should be able to be deployed to any docker compatible host. 
 * Navigate to the "docker" folder at the top of the source tree and run `bash build.sh`. 
 * Start the container by running bash start-container.sh which will start the program on port 3901, but obviously you can use your own docker startup command to have the service listen to and report on any port that you desire.
