@@ -15,7 +15,7 @@ Warnings & Limitations
 
 Reason For Development
 ======================
-I needed an application that would be able to gracefully handle many simulteous requests for work. Initially this project was written in PHP for ease of development, but was moved to Java for the the performance and multi-threaded capabilities. Other languages could have been used, but Java has a similar syntax to PHP, and is fairly easy to build multi-threaded applications with. 
+I needed an application that would be able to gracefully handle many simulteous requests for work, whilst having greater control over how tasks were orgainzed. This application's primary goal was to have a concept of tasks being dependent on other tasks having been completed before being available to be executed. Initially this project was written in PHP for ease of development, but was moved to Java for the the performance and multi-threaded capabilities. Other languages could have been used, but Java has a similar syntax to PHP, and is fairly easy to build multi-threaded applications with. 
 
 Licencing Information
 =====================
