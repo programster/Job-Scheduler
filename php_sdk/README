@@ -1,0 +1,13 @@
+This is a completely separate and self-contained "project" within the scheduler 
+project. 
+
+It is the corresponding SDK for interfacing with the scheduler's API, and hence
+there will be significant overlaps.
+Whenever the API is updated, updates to the SDK should take place as necessary 
+so that the SDK is always in sync with what it is relating to.
+e.g. revision 301 of the scheduler should work with revision 301 of the sdk 
+found within it.
+
+Having this in a separate repo could cause confusion and people may struggle
+to find the sdk that matches a specific previous revision of the scheduler 
+should we wish to roll back.

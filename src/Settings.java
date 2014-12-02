@@ -18,7 +18,7 @@ public class Settings
     public static int THREAD_POOL_SIZE = 1;
     
     
-    // Specify the time in seconds that a task is allowed to be locked for before being considred
+    // Specify the time in seconds that a task is allowed to be locked for before being considered
     // as having timed out and will be given to something else to take care of.
     public static long MAX_LOCK_TIME = 9;
     
