@@ -5,19 +5,10 @@
 
 # This is a customized version of ubuntu 14 that allows things like ssh server etc to run
 # http://phusion.github.io/baseimage-docker/
-FROM phusion/baseimage
+FROM ubuntu:14.04
 
 # Set correct environment variables.
 ENV HOME /root
-
-# Regenerate SSH host keys. baseimage-docker does not contain any, so you
-# have to do that yourself. You may also comment out this instruction; the
-# init system will auto-generate one during boot.
-RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
-
-# Use baseimage-docker's init system.
-CMD ["/sbin/my_init"]
-
 
 #============ Normal instructions below this line=====================
 
@@ -40,9 +31,14 @@ RUN echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true 
 RUN apt-get install oracle-java7-installer -y
 
 # This is strictly not necessary but sure makes debugging easier.
-RUN apt-get install vim.tiny
+RUN apt-get install vim -y
+
+# Install cron service for keeping the container open
+RUN apt-get install cron -y
+
 
 # Add our java source files (will build based on these later)
+RUN mkdir /root/scheduler
 ADD src /root/scheduler/src
 ADD docker /root/scheduler/docker
 
