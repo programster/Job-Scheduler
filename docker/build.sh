@@ -1,11 +1,33 @@
 #!/bin/bash
 
-# Get absolute path to the script
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# ensure running bash
+if ! [ -n "$BASH_VERSION" ];then
+    echo "this is not bash, calling self with bash....";
+    SCRIPT=$(readlink -f "$0")
+    /bin/bash $SCRIPT
+    exit;
+fi
+
+# Get the path to script just in case executed from elsewhere.
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+cd $SCRIPTPATH
 
 cp -f Dockerfile ../.
 cd ../.
-docker build .
 
-echo "start the container with the following command:"
+PROJECT_NAME="scheduler"
+
+# Ask the user if they want to use the docker cache
+read -p "Do you want to use a cached build (y/n)? " -n 1 -r
+echo ""   # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    docker build --tag "$PROJECT_NAME" .
+else
+    docker build --tag "$PROJECT_NAME" --no-cache .
+fi
+
+
+echo "Run the container with the following command:"
 echo "bash start-container.sh"
