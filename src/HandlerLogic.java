@@ -67,11 +67,14 @@ public class HandlerLogic
             
             // Wait for the client to ack the message recieved
             System.out.println("Waiting for client to ack the message");
+            int waitTime = 0;
+            int maxWaitTime = Settings.MAX_ACK_WAIT * 1000;
             
-            while (in.available() == 0)
+            while (in.available() == 0 && waitTime < maxWaitTime)
             {
                 try 
                 {
+                    waitTime += 100;
                     System.out.println("sleeping");
                     Thread.sleep(100);
                 } 
@@ -82,7 +85,6 @@ public class HandlerLogic
             }
             
             System.out.println("Closing socket");
-            //System.out.println("Client closed the connection, closing our end.");
             out.close();
             br.close();
             clientSocket.close();
