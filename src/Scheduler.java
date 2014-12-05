@@ -13,6 +13,7 @@
  */
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
@@ -312,10 +313,12 @@ public class Scheduler
         JsonObject info = new JsonObject();
         Collection tasksCollection = m_tasks.values();
         Collection processingTasks = m_processingTasks.values();
+        Collection dependencies = m_dependencies.values();
         
         info = addTaskCollectionToJsonObject(info, "tasks",            tasksCollection);
         info = addTaskCollectionToJsonObject(info, "available_tasks",  m_availableTasks);
         info = addTaskCollectionToJsonObject(info, "processing_tasks", processingTasks);
+        info = addTaskCollectionToJsonObject(info, "dependencies",     dependencies);
         info = addTaskCollectionToJsonObject(info, "tasks",            tasksCollection);
         
         return info;
@@ -335,18 +338,18 @@ public class Scheduler
                                                      Collection collection)
     {
         Gson gson = new Gson();
-        ArrayList<String> serializedTaskArray = new ArrayList<>(); 
+        JsonArray serializedTaskArray = new JsonArray();
         
         Iterator it = collection.iterator();
         
         while (it.hasNext())
         {
             Task task = (Task)it.next();
-            serializedTaskArray.add(task.jsonSerialize().getAsString());
+            JsonPrimitive element = new JsonPrimitive(task.jsonSerialize().toString());
+            serializedTaskArray.add(element);
         }
-       
-        String serializedTasksString = gson.toJson(serializedTaskArray);
-        obj.add(name, new JsonPrimitive(serializedTasksString));
+        
+        obj.add(name, serializedTaskArray);
         
         return obj;
     }
