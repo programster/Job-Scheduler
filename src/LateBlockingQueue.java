@@ -1,3 +1,17 @@
+/*
+ * This collection specializes in only sorting elements at the point of when they are being pulled
+ * from the head of the queue, and not when they are inserted. For this reason, this class should
+ * be used in stuations where adding an object could affect any of the the other stored objects 
+ * comparison value, thus making re-sorting computationally expensive. By performing sorts as late 
+ * as possible, there are no "wasted" sorts from sequential insertions.
+ *
+ * We dont actually sort the collection, but perform a "min" operation. This is because we have
+ * no way of knowing whether the next few actions will be reads, or whether there will be a write.
+ * I have found that performance is noticeably better in general by just performing a min, but if 
+ * your workload performs "batches" of sequential reads rather than a general mix of reads/writes
+ * Please refer to:
+ * http://stackoverflow.com/questions/22617080/java-threadsafe-collection-that-sorts-on-remove-take/22617265?noredirect=1#comment34440355_22617265
+ */
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -5,17 +19,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Queue;
-
-/*
- * This is a collection that does not sort elements when they are added, but performs a search
- * for the min element whenever we try to fetch the head of the queue. 
- * You only want to use this when the object's order/priority (defined by the objects comparison
- * method) is likely to change after having been added to this collection and so the "order" needs
- * to be evaluated as late as possible.
- * For these reasons, we do not perform sorts, but perform searches for the min element.
- * Please refer to:
- * http://stackoverflow.com/questions/22617080/java-threadsafe-collection-that-sorts-on-remove-take/22617265?noredirect=1#comment34440355_22617265
- */
 
 
 public class LateBlockingQueue<E extends Comparable<E>> implements Queue<E>
@@ -34,7 +37,7 @@ public class LateBlockingQueue<E extends Comparable<E>> implements Queue<E>
         
         if (!m_list.isEmpty())
         {
-            if (true)
+            if (true) // Set this to false if your workload performs reads in batches
             {
                 element = Collections.min(m_list);
                 remove(element);
@@ -86,7 +89,7 @@ public class LateBlockingQueue<E extends Comparable<E>> implements Queue<E>
     }
     
     @Override
-    public boolean remove(Object o) 
+    public synchronized boolean remove(Object o) 
     {
         int start = m_list.size();
         return m_list.remove(o);
