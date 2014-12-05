@@ -1,7 +1,7 @@
 /*
- * Because we have two possible architectures (one thread per socket or thread pools) we have all
- * teh logic here that the objects share. Thus if we ever want to update the logice we only have
- * to change here.
+ * Because we have two possible threading types (one thread per socket or thread pools) we have all
+ * the logic here that the objects share. Thus if we ever want to update the logic we only have
+ * to change it here.
  */
 
 
@@ -164,7 +164,7 @@ public class HandlerLogic
                 // Any of the handlers can throw an exception.
                 System.out.println("Building error response for client...");
                 response = addToJson(response, "result", "error");
-                String errorMessage = e.getMessage();
+                String errorMessage = e.toString();
                 System.out.println("error message was: " + e.toString());
                 response = addToJson(response, "message", errorMessage);
                 System.out.println("Error response has been generated");
@@ -213,7 +213,7 @@ public class HandlerLogic
     
     /**
      * Handle a request to add a task to the scheduler.
-     * @param clientMessage - the json objec that represents the request that was sent to us
+     * @param clientMessage - the JSON object that represents the request that was sent to us
      * @return
      * @throws Exception 
      */
@@ -280,8 +280,8 @@ public class HandlerLogic
     
     
     /**
-     * 
-     * @param clientMessage
+     * Handler for the "get_task" request
+     * @param clientMessage - the JSON object that represents the request that was sent to us
      * @return 
      */
     private static JsonObject handleGetTask(JsonObject clientMessage) throws Exception
@@ -303,7 +303,7 @@ public class HandlerLogic
     
     /**
      * Handle the users request to mark a task as having been completed.
-     * @param clientMessage - the request that was sent to us
+     * @param clientMessage - the JSON object that represents the request that was sent to us
      * @return void
      */
     private static void handleCompleteTask(JsonObject clientMessage) throws Exception
