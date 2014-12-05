@@ -309,10 +309,8 @@ public class Scheduler
      */
     public synchronized JsonObject getInfo()
     {
-        JsonObject info = null;
-        
+        JsonObject info = new JsonObject();
         Collection tasksCollection = m_tasks.values();
-        
         Collection processingTasks = m_processingTasks.values();
         
         info = addTaskCollectionToJsonObject(info, "tasks",            tasksCollection);
