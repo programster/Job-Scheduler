@@ -77,22 +77,22 @@ class SchedulerCommunicator
     {        
         $task = null;
         
-        $request = array();
-        $request['action'] = 'get_task';
+        $request = array(
+            'action' => 'get_task'
+        );
+        
         
         $responseArray = $this->sendRequest($request);
-        
         $getTaskResponse = new GetTaskResponse($responseArray);
 
         if ($getTaskResponse->isOk())
         {
-            # Using an array is me being REALLY lazy. Please do not reproduce. 
             $task = $getTaskResponse->getTask();
         }
         else
         {
             # There are no available tasks is ok. return null
-            if (strcmp($getTaskResponse->getError(), "There are no available tasks!") !== 0)
+            if (stripos($getTaskResponse->getError(), "There are no available tasks!") === FALSE)
             {
                 $err_msg = 'sending getjob request failed: [' . $getTaskResponse->getError() . ']';
                 throw new Exception($err_msg);
@@ -111,10 +111,12 @@ class SchedulerCommunicator
      * @return type
      */
     public function markTaskCompleted($taskId, $lock)
-    {
-        $request['action']  = 'complete_task';
-        $request['task_id'] = $taskId;
-        $request['lock']    = $lock;
+    {        
+        $request = array(
+            'action'  => 'complete_task',
+            'task_id' => $taskId,
+            'lock'    => $lock
+        );
         
         $response = $this->sendRequest($request);
         $baseResponse = new BaseResponse($response);
@@ -136,10 +138,6 @@ class SchedulerCommunicator
      */
     public function rejectTask($taskId, $lock)
     {
-        $request['action']  = 'reject_task';
-        $request['task_id'] = $taskId;
-        $request['lock']    = $lock;
-        
         $request = array(
             'action'  => 'reject_task',
             'task_id' => $taskId,
@@ -282,7 +280,6 @@ class SchedulerCommunicator
         
         if ($ack != null && $ack != "")
         {
-            print "writing ack to server" . PHP_EOL;
             $ack .= PHP_EOL;
             socket_write($socket, $ack, strlen($ack));
         }
