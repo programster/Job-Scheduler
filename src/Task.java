@@ -138,7 +138,12 @@ public class Task implements Comparable<Task>
         jsonForm.add("creation_time", new JsonPrimitive(m_creationTime));
         jsonForm.add("priority",      new JsonPrimitive(m_priority));
         jsonForm.add("lock",          new JsonPrimitive(m_lock));
-        jsonForm.add("group",         new JsonPrimitive(m_group));
+        
+        if (m_group != null)
+        {
+            jsonForm.add("group", new JsonPrimitive(m_group));
+        }
+        
         jsonForm.add("extra_info",    new JsonPrimitive(m_extraInfo));
         
         return jsonForm;
