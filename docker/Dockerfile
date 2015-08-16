@@ -12,23 +12,20 @@ ENV HOME /root
 
 #============ Normal instructions below this line=====================
 
-RUN apt-get update
-RUN apt-get dist-upgrade -y
-
-
 # Add repo for java
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C2518248EEA14886
-RUN echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main' > /etc/apt/sources.list.d/webupd8team-java-trusty.list
+RUN apt-get update
+RUN apt-get install python-software-properties software-properties-common -y
+RUN add-apt-repository ppa:webupd8team/java -y
 
 # Upgrade the system
 RUN apt-get update
-RUN apt-get dist-upgrade -y
+RUN sudo apt-get dist-upgrade -y
 
 # This prevents the acceptance of the licence agreement preventing java install
-RUN echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
 
 # Install java 7
-RUN apt-get install oracle-java7-installer -y
+RUN apt-get install oracle-java8-installer -y
 
 # This is strictly not necessary but sure makes debugging easier.
 RUN apt-get install vim -y
