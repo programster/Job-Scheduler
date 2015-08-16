@@ -28,6 +28,8 @@ else
     docker build --tag "$PROJECT_NAME" --no-cache .
 fi
 
+# Clean up - Remove the dockerfile we moved up.
+rm $SCRIPTPATH/../Dockerfile
 
 echo "Run the container with the following command:"
 echo "bash start-container.sh"
