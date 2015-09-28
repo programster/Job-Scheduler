@@ -37,8 +37,8 @@ public class HandlerLogic
 
             while (!br.ready())
             {
-                System.out.println("Buffered reader is not ready!?");
-                System.out.println("sleeping");
+                Debug.println("Buffered reader is not ready!?");
+                Debug.println("sleeping");
                 
                 try 
                 {
@@ -54,11 +54,11 @@ public class HandlerLogic
             String clientMsg = br.readLine();
             JsonObject response = processMessage(clientMsg);
 
-            System.out.println("Converting response object to string...");
+            Debug.println("Converting response object to string...");
             Gson gson = new Gson();
             String responseString = gson.toJson(response);
 
-            System.out.println("Writing to client: \n" + responseString);
+            Debug.println("Writing to client: \n" + responseString);
 
             // We must use println instead of print becuase php (Normal mode not binary) 
             // requires responses to end in an endline to mark the end.
@@ -66,7 +66,7 @@ public class HandlerLogic
             out.flush();
             
             // Wait for the client to ack the message recieved
-            System.out.println("Waiting for client to ack the message");
+            Debug.println("Waiting for client to ack the message");
             int waitTime = 0;
             int maxWaitTime = Settings.MAX_ACK_WAIT * 1000;
             
@@ -75,7 +75,7 @@ public class HandlerLogic
                 try 
                 {
                     waitTime += 100;
-                    System.out.println("sleeping");
+                    Debug.println("sleeping");
                     Thread.sleep(100);
                 } 
                 catch (InterruptedException ex) 
@@ -84,14 +84,14 @@ public class HandlerLogic
                 }
             }
             
-            System.out.println("Closing socket");
+            Debug.println("Closing socket");
             out.close();
             br.close();
             clientSocket.close();
         }
         catch (IOException e)
         {
-            System.out.println("ERROR! HandlerLogic experienced IOException when handling socket");
+            Debug.println("ERROR! HandlerLogic experienced IOException when handling socket");
         }
     }
     
@@ -103,7 +103,7 @@ public class HandlerLogic
      */
     private static JsonObject processMessage(String clientMsg)
     {
-        System.out.println("processing client message: " + clientMsg);
+        Debug.println("processing client message: " + clientMsg);
         JsonObject response = new JsonObject();
         JsonObject cargo = null;
         
@@ -111,11 +111,20 @@ public class HandlerLogic
         JsonParser parser = new JsonParser();
         JsonObject clientMsgJson = (JsonObject)parser.parse(clientMsg);
         
+        if (!clientMsgJson.has("queue_name"))
+        {
+            // Any of the handlers can throw an exception.
+            Debug.println("Client failed to provide a queue_name in: [" + clientMsg + "]");
+            response = addToJson(response, "result", "error");
+            response = addToJson(response, "message", "no queue_name specified");
+        }
+        
+        
         if (clientMsgJson.has("action"))
         {
             String action = clientMsgJson.get("action").getAsString();
             
-            System.out.println("Action: " + action);
+            Debug.println("Action: " + action);
             
             clientMsgJson.remove("action");
             
@@ -131,7 +140,7 @@ public class HandlerLogic
 
                     case "get_task":
                     {
-                        System.out.println("Running get_task");
+                        Debug.println("Running get_task");
                         cargo = handleGetTask(clientMsgJson);
                     }
                     break;
@@ -164,18 +173,18 @@ public class HandlerLogic
             catch (Exception e)
             {
                 // Any of the handlers can throw an exception.
-                System.out.println("Building error response for client...");
+                Debug.println("Building error response for client...");
                 response = addToJson(response, "result", "error");
                 String errorMessage = e.toString();
-                System.out.println("error message was: " + e.toString());
+                Debug.println("error message was: " + e.toString());
                 response = addToJson(response, "message", errorMessage);
-                System.out.println("Error response has been generated");
+                Debug.println("Error response has been generated");
             }
         }
         else
         {
             // Any of the handlers can throw an exception.
-            System.out.println("Client failed to provide an action in: [" + clientMsg + "]");
+            Debug.println("Client failed to provide an action in: [" + clientMsg + "]");
             response = addToJson(response, "result", "error");
             response = addToJson(response, "message", "no action specified");
         }
@@ -185,9 +194,9 @@ public class HandlerLogic
         
         if (cargo != null)
         {
-            System.out.println("Aadding the cargo as a json primitive...");
+            Debug.println("Aadding the cargo as a json primitive...");
             response.add("cargo", cargo);
-            System.out.println("Added the cargo as json primitive.");
+            Debug.println("Added the cargo as json primitive.");
         }
         else
         {
@@ -224,20 +233,20 @@ public class HandlerLogic
         // This forms part of the response.
         JsonObject cargo = new JsonObject();
         
-        
         if (!clientMessage.has("task_name"))
         {
             throw new Exception("Missing required parameter [task_name]");
         }
         
+        String queueName = clientMessage.get("queue_name").getAsString();
         String taskName = clientMessage.get("task_name").getAsString();
-        System.out.println("Adding task: " +  taskName);
+        Debug.println("Adding task: " +  taskName);
                 
         ArrayList<Integer> dependencies = new ArrayList<>();
         
         if (clientMessage.has("dependencies"))
         {
-            System.out.println("Adding dependeincies...");
+            Debug.println("Adding dependeincies...");
             JsonArray dependenciesRaw = clientMessage.get("dependencies").getAsJsonArray();
             Iterator dependencyIterator = dependenciesRaw.iterator();
             
@@ -248,7 +257,7 @@ public class HandlerLogic
             }
         }
         
- 
+        
         String extraInfo = "";
         if (clientMessage.has("extra_info"))
         {
@@ -271,9 +280,9 @@ public class HandlerLogic
         }
         
         Scheduler scheduler = Scheduler.getInstance();
-        
-        System.out.println("adding the task to the scheduler...");
-        Integer newTaskId = scheduler.addTask(taskName, dependencies, extraInfo, priority, group);
+        TaskQueue queue = scheduler.getQueue(queueName);
+        Debug.println("adding the task to the scheduler...");
+        Integer newTaskId = queue.addTask(taskName, dependencies, extraInfo, priority, group);
         
         cargo.add("task_id", new JsonPrimitive(newTaskId));
         
@@ -290,12 +299,14 @@ public class HandlerLogic
     {
         // This forms part of the response.
         JsonObject cargo = new JsonObject();
-        System.out.println("Getting scheduler...");
+        Debug.println("Getting scheduler...");
+        String queueName = clientMessage.get("queue_name").getAsString();
         Scheduler scheduler = Scheduler.getInstance();
+        TaskQueue queue = scheduler.getQueue(queueName);
         
-        System.out.println("Asking scheduler for first available task...");
-        Task taskToDo = scheduler.getAvailableTask();
-        System.out.println("Serializing fetched task...");
+        Debug.println("Asking scheduler for first available task...");
+        Task taskToDo = queue.getAvailableTask();
+        Debug.println("Serializing fetched task...");
         
         cargo.add("task", taskToDo.jsonSerialize());
         
@@ -324,8 +335,10 @@ public class HandlerLogic
         String lock     = clientMessage.get("lock").getAsString();
                 
         /* @var $scheduler Scheduler */
+        String queueName = clientMessage.get("queue_name").getAsString();
         Scheduler scheduler = Scheduler.getInstance();
-        scheduler.completeTask(task_id, lock);        
+        TaskQueue queue = scheduler.getQueue(queueName);
+        queue.completeTask(task_id, lock);        
     }
     
     
@@ -336,9 +349,10 @@ public class HandlerLogic
      */
     private static JsonObject handleGetInfo(JsonObject clientMessage)
     {        
+        String queueName = clientMessage.get("queue_name").getAsString();
         Scheduler scheduler = Scheduler.getInstance();
-        JsonObject cargo = scheduler.getInfo();
-
+        TaskQueue queue = scheduler.getQueue(queueName);
+        JsonObject cargo = queue.getInfo();
         return cargo;
     }
     
@@ -369,10 +383,12 @@ public class HandlerLogic
         String lock     = clientMessage.get("lock").getAsString();
                 
         /* @var $scheduler Scheduler */
+        String queueName = clientMessage.get("queue_name").getAsString();
         Scheduler scheduler = Scheduler.getInstance();
+        TaskQueue queue = scheduler.getQueue(queueName);
         
         // This will throw the appropriate exception if fails so dont need to build response here.
-        scheduler.rejectTask(task_id, lock);
+        queue.rejectTask(task_id, lock);
     }
     
     
@@ -394,9 +410,11 @@ public class HandlerLogic
         
         Integer task_id = clientMessage.get("task_id").getAsInt();
         String lock     = clientMessage.get("lock").getAsString();
-                        
+        
         // This will throw the appropriate exception if fails so dont need to build response here.
-        scheduler.removeTask(task_id);
+        String queueName = clientMessage.get("queue_name").getAsString();
+        TaskQueue queue = scheduler.getQueue(queueName);
+        queue.removeTask(task_id);
     }
     
     

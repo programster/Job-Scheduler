@@ -9,6 +9,7 @@
 
 require_once(__DIR__ . '/settings.php');
 require_once(__DIR__ . '/libs/auto_loader.class.php');
+require_once(__DIR__ . '/libs/SchedulerClient.php');
 
 $directories = array(
     __DIR__,

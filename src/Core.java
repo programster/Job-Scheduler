@@ -119,19 +119,17 @@ public class Core
      * @param lockFileName - the name of the file that should act as the lock.
      * @return flag indicating whether already running.
      */
-    public static boolean isAlreadyRunning(String lockDirPath, String lockFileName)
+    public static boolean isAlreadyRunning(File lockDirPath, String lockFileName)
     {
         boolean isAlreadyRunning = false;
         String absoluteFilePath = lockDirPath + "/" + lockFileName;
-
-        File scriptDir = new File(lockDirPath);
-
+        
         // Create the directory structure if it doesn't exist (including all relevant parents)
-        if (!scriptDir.exists())
+        if (!lockDirPath.exists())
         {
-            scriptDir.mkdirs();
+            lockDirPath.mkdirs();
         }
-
+        
         // Create the file if it doesnt exist.
         File scriptFile = new File(absoluteFilePath);
         
@@ -147,7 +145,7 @@ public class Core
                 System.exit(1);
             }
         }
-
+        
         // If can get a lock on the file then this process is not already running.
         try
         {

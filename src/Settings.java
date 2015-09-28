@@ -9,13 +9,15 @@ import java.net.InetAddress;
 
 public class Settings 
 {
+    public static Boolean DEBUG = false;
+    
     // specify whether you want to spawn one thread per connection (apache style) or want to use
-    // a thread pool which removes the overhead of constantly spawning threads.
+    // a thread pool which removes the overhead of constantly spawning threads (nginx).
     public static Boolean USE_THREAD_POOL = false;
     
     // If USE_THREAD_POOL is set to true, this specifies the size of the thread pool (how many 
     // threads will be handling connections).
-    public static int THREAD_POOL_SIZE = 1;
+    public static int THREAD_POOL_SIZE = Core.GetNumCores();
     
     
     // Specify the time in seconds that a task is allowed to be locked for before being considered

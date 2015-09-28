@@ -6,20 +6,23 @@
  * scheduler API without having to look details up.
  */
 
-class SchedulerCommunicator
+class SchedulerClient
 {
     private $m_address;
     private $m_port;
+    private $m_queueName;
 
     /**
      * Construct the communicator so that we can interface with the scheduler.
      * @param String $address - the url of where the scheduler is
      * @param int $port - the port to connect on.
+     * @param string $queueName - the name of the queue we will put tasks into etc.
      */
-    public function __construct($address, $port)
+    public function __construct($address, $port, $queueName)
     {
         $this->m_address = $address;
         $this->m_port = $port;
+        $this->m_queueName = $queueName;
     }
     
     
@@ -181,6 +184,7 @@ class SchedulerCommunicator
      */
     private function sendRequest($request)
     {
+        $request['queue_name'] = $this->m_queueName;
         $response = self::sendTcpRequest($this->m_address, $this->m_port, $request);
         return $response;
     }

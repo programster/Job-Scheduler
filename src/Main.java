@@ -1,4 +1,7 @@
 
+import java.io.File;
+
+
 
 class Main
 {
@@ -6,7 +9,7 @@ class Main
     {
         try
         {
-            String path = Core.getJarPath();
+            File path = new java.io.File( "." );
             
             if (!Core.isAlreadyRunning(path, "lock.txt"))
             {
@@ -21,7 +24,7 @@ class Main
         }
         catch(Exception e)
         {
-            System.out.println("Failed to get the JAR path");
+            System.out.println("Failed to get the JAR path " + e.toString());
         }
     }
 }

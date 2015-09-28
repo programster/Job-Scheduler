@@ -21,6 +21,7 @@ class TestPerformance extends TestAbstract
     public function getErrorMessage() 
     {
         return "TestPerformance: Scheduler was not quick enough. " . PHP_EOL .
+               "Have you made sure to disable DEBUG mode on the server?" . PHP_EOL .
                "Time taken [" . $this->m_time_taken . "]" . PHP_EOL .
                "Time limit [" . self::TIME_LIMIT . "]";
     }

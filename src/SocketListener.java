@@ -55,6 +55,8 @@ public class SocketListener extends Thread
         
         if (Settings.USE_THREAD_POOL)
         {
+            s_threadHandlers = new ArrayList<>();
+            
             for (int s=0; s<Settings.THREAD_POOL_SIZE; s++)
             {
                 Thread pool_thread = new SocketThreadPoolHandler(this);
@@ -72,9 +74,9 @@ public class SocketListener extends Thread
         {
             try 
             {
-                System.out.println("Waiting for a connection...");
+                Debug.println("Waiting for a connection on port " + Settings.SOCKET_PORT + "...");
                 Socket clientSocket = m_socket.accept();
-                System.out.println("Accepted a new connection.");
+                Debug.println("Accepted a new connection.");
                 
                 if (Settings.USE_THREAD_POOL)
                 {

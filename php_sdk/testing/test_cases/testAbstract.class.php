@@ -14,8 +14,8 @@ abstract class TestAbstract
     
     
     /**
-     * Fetches a schedulerCommunicator by creating it if it does not exist yet.
-     * @return SchedulerCommunicator
+     * Fetches a SchedulerClient by creating it if it does not exist yet.
+     * @return SchedulerClient
      */
     protected function getScheduler()
     {
@@ -23,8 +23,11 @@ abstract class TestAbstract
         
         if ($this->m_scheduler == null)
         {
-            $this->m_scheduler = new SchedulerCommunicator($globals['SCHEDULER_ADDRESS'], 
-                                                           $globals['SCHEDULER_PORT']);
+            $this->m_scheduler = new SchedulerClient(
+                $globals['SCHEDULER_ADDRESS'], 
+                $globals['SCHEDULER_PORT'],
+                $globals['SCHEDULER_QUEUE']
+            );
         }
         
         return $this->m_scheduler;

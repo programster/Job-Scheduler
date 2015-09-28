@@ -17,6 +17,9 @@ $globals['SCHEDULER_ADDRESS'] = "10.1.0.3";
 $globals['SCHEDULER_PORT'] = 3901;
 
 
+$globals['SCHEDULER_QUEUE'] = 'php_sdk_testing';
+
+
 # This setting only needs to be set for the automated testing. It should match up with whatever
 # is the max lock time on the scheduler.
 # This does not change the SDK in any other way!

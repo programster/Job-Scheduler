@@ -20,6 +20,8 @@ public class Task implements Comparable<Task>
     // Namd of this task e.g. 'Smoothen Roads'
     private final String m_name;
     
+    private final String m_queueName;
+    
     // Json string of data to be stored about the task
     private final String m_extraInfo;
     
@@ -40,6 +42,7 @@ public class Task implements Comparable<Task>
     /**
      * Constructor for a Task to be executed.
      * @param taskId - the unique id of this task
+     * @param queue_name - the name of the queue this task belongs to.
      * @param name - a human readable name for this task
      * @param remainingDependencies - array of task ids that this task relies on having finished
      * @param extraInfo - any information to attach to the task to feed back to executors
@@ -49,7 +52,8 @@ public class Task implements Comparable<Task>
      *                 be null
      * @param extraInfo - json string of any information to go with the task. (context)
      */
-    public Task(int taskId, 
+    public Task(int taskId,
+                String queue_name, 
                 String name, 
                 HashMap<Integer, Integer> remainingDependencies, 
                 String extraInfo, 
@@ -63,6 +67,7 @@ public class Task implements Comparable<Task>
         m_priority              = priority;
         m_extraInfo             = extraInfo;
         m_group                 = group;
+        m_queueName             = queue_name;
     }
     
     
@@ -130,9 +135,7 @@ public class Task implements Comparable<Task>
     public JsonObject jsonSerialize()
     {    
         JsonObject jsonForm = new JsonObject();
-        
-        System.out.println("name: " + m_name);
-        
+                
         jsonForm.add("id",            new JsonPrimitive(m_taskId));
         jsonForm.add("name",          new JsonPrimitive(m_name));
         jsonForm.add("creation_time", new JsonPrimitive(m_creationTime));
@@ -188,7 +191,8 @@ public class Task implements Comparable<Task>
     public ArrayList<Task> getDependents()
     {
         Scheduler scheduler = Scheduler.getInstance();
-        ArrayList<Integer> dependent_task_ids = scheduler.getDependencyList(m_taskId);
+        TaskQueue queue = scheduler.getQueue(m_queueName);
+        ArrayList<Integer> dependent_task_ids = queue.getDependencyList(m_taskId);
         
         ArrayList<Task>dependent_tasks = new ArrayList();
 
@@ -199,7 +203,7 @@ public class Task implements Comparable<Task>
             
             try
             {
-                depenedentTask = scheduler.getTaskFromId(dependent_task_id);
+                depenedentTask = queue.getTaskFromId(dependent_task_id);
             }
             catch (Exception e)
             {
@@ -278,7 +282,7 @@ public class Task implements Comparable<Task>
     @Override 
     public boolean equals(Object other) 
     {
-        System.out.println("Running match against other object");
+        Debug.println("Running match against other object");
         boolean isEqual = false;
         
         if (other != null)
