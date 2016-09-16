@@ -12,7 +12,7 @@ public class Debug
 {
     public static void println(String message)
     {
-        if (Settings.DEBUG)
+        if (Settings.DEBUG())
         {
             System.out.println(message);
         }

@@ -68,7 +68,7 @@ public class HandlerLogic
             // Wait for the client to ack the message recieved
             Debug.println("Waiting for client to ack the message");
             int waitTime = 0;
-            int maxWaitTime = Settings.MAX_ACK_WAIT * 1000;
+            int maxWaitTime = Settings.MAX_ACK_WAIT() * 1000;
             
             while (in.available() == 0 && waitTime < maxWaitTime)
             {
