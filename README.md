@@ -10,6 +10,7 @@ Java provided the easiest way to program whilst achieving the desired performanc
 
 ```
 docker run -d \
+-p 3901:3901 \
 -e "ADDRESS=172.17.0.2" \
 --name="scheduler" \
 programster/job-scheduler
@@ -21,6 +22,7 @@ docker pull programster/job-scheduler
 docker kill scheduler
 
 docker run -d \
+-p 3901:3901 \
 -e "ADDRESS=172.17.0.2" \
 --name="scheduler" \
 programster/job-scheduler
@@ -38,10 +40,10 @@ All of the settings can be configured through environment variables to make the 
 Environment variables for docker containers are specified with `-e` as shown below:
 
 ```
-docker run -d \
+docker run \
 -e "ADDRESS=172.17.0.2" \
 -e "USE_THREAD_POOL=true" \
-programster/job-scheduler
+...
 ```
 
 ### DEBUG
