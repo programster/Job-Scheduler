@@ -34,17 +34,16 @@ public class SocketListener extends Thread
     {
         try
         {
-            int port = Settings.SOCKET_PORT;
             int max_waiting_connections = 100;
             
-            if (Settings.ADDRESS != null)
+            if (Settings.ADDRESS() != null)
             {
-                InetAddress bindAddr = InetAddress.getByName(Settings.ADDRESS);
-                m_socket = new ServerSocket(Settings.SOCKET_PORT, max_waiting_connections, bindAddr);
+                InetAddress bindAddr = InetAddress.getByName(Settings.ADDRESS());
+                m_socket = new ServerSocket(Settings.SOCKET_PORT(), max_waiting_connections, bindAddr);
             }
             else
             {
-                m_socket = new ServerSocket(Settings.SOCKET_PORT, max_waiting_connections);
+                m_socket = new ServerSocket(Settings.SOCKET_PORT(), max_waiting_connections);
             }
         }
         catch (Exception e)
@@ -53,11 +52,11 @@ public class SocketListener extends Thread
             System.exit(1);
         }
         
-        if (Settings.USE_THREAD_POOL)
+        if (Settings.USE_THREAD_POOL())
         {
             s_threadHandlers = new ArrayList<>();
             
-            for (int s=0; s<Settings.THREAD_POOL_SIZE; s++)
+            for (int s=0; s<Settings.THREAD_POOL_SIZE(); s++)
             {
                 Thread pool_thread = new SocketThreadPoolHandler(this);
                 s_threadHandlers.add(pool_thread);
@@ -74,11 +73,11 @@ public class SocketListener extends Thread
         {
             try 
             {
-                Debug.println("Waiting for a connection on port " + Settings.SOCKET_PORT + "...");
+                Debug.println("Waiting for a connection on port " + Settings.SOCKET_PORT() + "...");
                 Socket clientSocket = m_socket.accept();
                 Debug.println("Accepted a new connection.");
                 
-                if (Settings.USE_THREAD_POOL)
+                if (Settings.USE_THREAD_POOL())
                 {
                     s_clientSockets.add(clientSocket);
                 }

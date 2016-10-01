@@ -23,5 +23,6 @@ docker rm $PROJECT_NAME
 
 docker run -d \
 -p 3901:3901 \
+-e "ADDRESS=172.17.0.2" \
 --name="$PROJECT_NAME" \
 $CONTAINER_IMAGE

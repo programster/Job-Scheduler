@@ -232,7 +232,7 @@ public class TaskQueue
                 
                 long age = timeNow - processingTask.getLockTime();
                 
-                if (age > (Settings.MAX_LOCK_TIME * 1000)) // * 1k because lock time in secs not ms
+                if (age > (Settings.MAX_LOCK_TIME() * 1000)) // * 1k because lock time in secs not ms
                 {
                     System.out.println("Unlocking a task that has passed age limit.");
                     rejectTask(processing_task_id, processingTask.getLock());
