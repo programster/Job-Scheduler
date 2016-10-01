@@ -25,7 +25,7 @@ class TestPerformance extends TestAbstract
                "Time taken [" . $this->m_time_taken . "]" . PHP_EOL .
                "Time limit [" . self::TIME_LIMIT . "]";
     }
-
+    
     
     public function test() 
     {
@@ -73,19 +73,19 @@ class TestPerformance extends TestAbstract
             {
                 $maxNumDependencies = 10;
             }
-
+            
             $numDependencies = rand(0, $maxNumDependencies);
-
+            
             for ($t=0; $t<$numDependencies; $t++)
             {
                 $chosenIndex = null;
                 $chosenIndexes = array();
-
+                
                 # qucik and dirty to prog (not optimal)
                 while ($chosenIndex === null)
                 {
                     $chosenIndex = rand(0, $numJobs-1);
-
+                    
                     if (!isset($chosenIndexes[$chosenIndex]))
                     {
                         $dependencies[] = $jobs[$chosenIndex];
@@ -97,7 +97,7 @@ class TestPerformance extends TestAbstract
                     }
                 }
             }
-
+            
             $priority = rand(1,10);
             $jobs[] = $scheduler->addTask('random_task', $context=array(), $dependencies, $priority);
         }        
@@ -125,6 +125,6 @@ class TestPerformance extends TestAbstract
             {
                 $this->m_successful = false;
             }
-        }        
+        }
     }
 }
