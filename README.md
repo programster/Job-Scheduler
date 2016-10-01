@@ -20,6 +20,7 @@ The following commands can be used to update and re-deploy
 ```
 docker pull programster/job-scheduler
 docker kill scheduler
+docker rm scheduler
 
 docker run -d \
 -p 3901:3901 \
