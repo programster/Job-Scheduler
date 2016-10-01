@@ -74,7 +74,7 @@ abstract class TestAbstract
         
         if ($task === null)
         {
-            print "was expecting a task but recieved a null task";
+            print get_class($this) . " error: was expecting a task but recieved a null task" . PHP_EOL;
             $result = false;
         }
         else
@@ -120,7 +120,7 @@ abstract class TestAbstract
         
         if ($task === null)
         {
-            print "was expecting a task but recieved a null task";
+            print get_class($this) . " error: wwas expecting a task but recieved a null task" . PHP_EOL;
             $result = false;
         }
         else
