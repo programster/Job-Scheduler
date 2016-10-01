@@ -65,14 +65,9 @@ Specify the number of threads you want in your thread pool to handle requests. T
 * **Default:** number of vCPUs on host.
 * **Example Usage:** `THREAD_POOL_SIZE=5`
 
-### MAX_ACK_WAIT
-Specify the amount of time to wait for an acknowledgement of a message before considering the message as having beeen lost. At the moment this just results in the socket being closed, but in the future, not acking a message will revert any changes made by the request.
-
-* **Default**: `3`
-
 
 ### MAX_LOCK_TIME
-Specify the maximum amount of time that a worker can have a task "checked out" before it is considered lost and the task will be unlocked for other workers to grab. By default there is no timeout and the task will be considered locked until the worker comes back and says it has been completed.
+Specify the maximum amount of time that a worker can have a task "checked out" before it is considered lost and the task will be unlocked for other workers to grab. By default there is no timeout and the task will be considered locked until the either the socket connection is lost, or the worker comes back and says it has been completed.
 
 * **Default:** `null` (wait forever)
 

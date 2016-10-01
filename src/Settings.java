@@ -54,23 +54,6 @@ public class Settings
     
     // Specify the time in seconds that a task is allowed to be locked for before being considered
     // as having timed out and will be given to something else to take care of.
-    // Atm this just results in the socket being closed, but in the future, not acking a message
-    // will revert any changes made by the request.
-    public static int MAX_ACK_WAIT()
-    {
-        int maxAckWait = 3;
-        
-        if (System.getenv("MAX_ACK_WAIT") != null) 
-        {
-            maxAckWait = Integer.parseInt(System.getenv("MAX_ACK_WAIT"));
-        }
-        
-        return maxAckWait;
-    }
-    
-    
-    // Specify the time in seconds that a task is allowed to be locked for before being considered
-    // as having timed out and will be given to something else to take care of.
     public static long MAX_LOCK_TIME()
     {
         long maxLockTime = 9;
