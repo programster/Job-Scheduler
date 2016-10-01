@@ -50,16 +50,16 @@ public class HandlerLogic
                 }
             }
             
-    
+            
             String clientMsg = br.readLine();
             JsonObject response = processMessage(clientMsg);
-
+            
             Debug.println("Converting response object to string...");
             Gson gson = new Gson();
             String responseString = gson.toJson(response);
-
+            
             Debug.println("Writing to client: \n" + responseString);
-
+            
             // We must use println instead of print becuase php (Normal mode not binary) 
             // requires responses to end in an endline to mark the end.
             out.println(responseString);
@@ -137,31 +137,31 @@ public class HandlerLogic
                         cargo = handleAddTask(clientMsgJson);
                     }
                     break;
-
+                    
                     case "get_task":
                     {
                         Debug.println("Running get_task");
                         cargo = handleGetTask(clientMsgJson);
                     }
                     break;
-
+                    
                     case "complete_task":
                     {
                         handleCompleteTask(clientMsgJson);
                     }
                     break;
-
+                    
                     case "get_info":
                     {
                         cargo = handleGetInfo(clientMsgJson);
                     }
                     break;
-
+                    
                     case "reject_task":
                     {
                         handleRejectTask(clientMsgJson);
                     }
-
+                    
                     default:
                     {
                         throw new Exception("Unrecognized action specified: " + action);
@@ -241,7 +241,7 @@ public class HandlerLogic
         String queueName = clientMessage.get("queue_name").getAsString();
         String taskName = clientMessage.get("task_name").getAsString();
         Debug.println("Adding task: " +  taskName);
-                
+        
         ArrayList<Integer> dependencies = new ArrayList<>();
         
         if (clientMessage.has("dependencies"))
@@ -338,7 +338,7 @@ public class HandlerLogic
         String queueName = clientMessage.get("queue_name").getAsString();
         Scheduler scheduler = Scheduler.getInstance();
         TaskQueue queue = scheduler.getQueue(queueName);
-        queue.completeTask(task_id, lock);        
+        queue.completeTask(task_id, lock);
     }
     
     
@@ -357,7 +357,6 @@ public class HandlerLogic
     }
     
     
-    
     /**
      * Handle the request to reject a task. Rejecting a task results in the task being unlocked and
      * marked available for other tasks. Be careful that you don't use this request when you 
@@ -367,7 +366,7 @@ public class HandlerLogic
      */
     private static void handleRejectTask(JsonObject clientMessage) throws Exception
     {
-        // This forms part of the response.        
+        // This forms part of the response.
             
         if (!clientMessage.has("task_id"))
         {
