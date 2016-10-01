@@ -1,7 +1,8 @@
 /*
- * Because we have two possible threading types (one thread per socket or thread pools) we have all
- * the logic here that the objects share. Thus if we ever want to update the logic we only have
- * to change it here.
+ * All the "communication logic" (e.g. what requests we are expecting and how to respond to them) 
+ * is here because we have two possible threading types (one thread per socket or thread pools). 
+ * That way the two objects that handle the different threading types can just use this object and
+ * if we ever want to update the logic we only have to change it here.
  */
 
 
@@ -10,12 +11,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -27,71 +22,12 @@ public class HandlerLogic
      * this in order to handle their socket connections.
      * @param clientSocket 
      */
-    public static void handleSocket(Socket clientSocket)
+    public static void handleSocket(SocketConnection clientSocket)
     {
-        try
+        if (clientSocket.isMessageWaiting())
         {
-            InputStream in    = clientSocket.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            PrintWriter out   = new PrintWriter(clientSocket.getOutputStream());
-
-            while (!br.ready())
-            {
-                Debug.println("Buffered reader is not ready!?");
-                Debug.println("sleeping");
-                
-                try 
-                {
-                    Thread.sleep(100);
-                } 
-                catch (InterruptedException ex) 
-                {
-                    // do nothing
-                }
-            }
-            
-            
-            String clientMsg = br.readLine();
-            JsonObject response = processMessage(clientMsg);
-            
-            Debug.println("Converting response object to string...");
-            Gson gson = new Gson();
-            String responseString = gson.toJson(response);
-            
-            Debug.println("Writing to client: \n" + responseString);
-            
-            // We must use println instead of print becuase php (Normal mode not binary) 
-            // requires responses to end in an endline to mark the end.
-            out.println(responseString);
-            out.flush();
-            
-            // Wait for the client to ack the message recieved
-            Debug.println("Waiting for client to ack the message");
-            int waitTime = 0;
-            int maxWaitTime = Settings.MAX_ACK_WAIT() * 1000;
-            
-            while (in.available() == 0 && waitTime < maxWaitTime)
-            {
-                try 
-                {
-                    waitTime += 100;
-                    Debug.println("sleeping");
-                    Thread.sleep(100);
-                } 
-                catch (InterruptedException ex) 
-                {
-                    
-                }
-            }
-            
-            Debug.println("Closing socket");
-            out.close();
-            br.close();
-            clientSocket.close();
-        }
-        catch (IOException e)
-        {
-            Debug.println("ERROR! HandlerLogic experienced IOException when handling socket");
+            String clientMsg = clientSocket.readMessage();
+            processMessage(clientMsg, clientSocket);
         }
     }
     
@@ -101,7 +37,7 @@ public class HandlerLogic
      * @param String clientMsg - the message that was passed to us.
      * @return JsonObject
      */
-    private static JsonObject processMessage(String clientMsg)
+    private static void processMessage(String clientMsg)
     {
         Debug.println("processing client message: " + clientMsg);
         JsonObject response = new JsonObject();
@@ -119,13 +55,12 @@ public class HandlerLogic
             response = addToJson(response, "message", "no queue_name specified");
         }
         
+        String action = "";
         
         if (clientMsgJson.has("action"))
         {
-            String action = clientMsgJson.get("action").getAsString();
-            
+            action = clientMsgJson.get("action").getAsString();
             Debug.println("Action: " + action);
-            
             clientMsgJson.remove("action");
             
             try
@@ -162,6 +97,12 @@ public class HandlerLogic
                         handleRejectTask(clientMsgJson);
                     }
                     
+                    case "close":
+                    {
+                        // do nothing, we will handle this later down the logic
+                    }
+                    break;
+                    
                     default:
                     {
                         throw new Exception("Unrecognized action specified: " + action);
@@ -190,21 +131,29 @@ public class HandlerLogic
         }
         
         
-        String cargoString = "";
-        
-        if (cargo != null)
+        // If the client requested us to close the connection, then close it.
+        if (action.equals("close"))
         {
-            Debug.println("Aadding the cargo as a json primitive...");
-            response.add("cargo", cargo);
-            Debug.println("Added the cargo as json primitive.");
+            clientSocket.close();
         }
         else
         {
-            // Still want to send a cargo element, but with nothing in it.
-            response.add("cargo", new JsonPrimitive(""));
-        }
+            String cargoString = "";
         
-        return response;
+            if (cargo != null)
+            {
+                response.add("cargo", cargo);
+            }
+            else
+            {
+                // Still want to send a cargo element, but with nothing in it.
+                response.add("cargo", new JsonPrimitive(""));
+            }
+            
+            Gson gson = new Gson();
+            String responseString = gson.toJson(response);
+            clientSocket.sendMessage(responseString);
+        }
     }
     
     
