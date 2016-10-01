@@ -14,9 +14,15 @@ cd $SCRIPTPATH
 
 # load the variables
 #source ../../settings/docker_settings.sh
-PROJECT_NAME="scheduler"
 
-CONTAINER_IMAGE="$PROJECT_NAME"
+##############
+## Settings ##
+##############
+# Change REGISTRY to "" if you dont have a registry.
+REGISTRY="programster"
+PROJECT_NAME="job-scheduler"
+
+CONTAINER_IMAGE="$REGISTRY/$PROJECT_NAME"
 
 docker kill $PROJECT_NAME
 docker rm $PROJECT_NAME
