@@ -23,4 +23,5 @@ $globals['SCHEDULER_QUEUE'] = 'php_sdk_testing';
 # This setting only needs to be set for the automated testing. It should match up with whatever
 # is the max lock time on the scheduler.
 # This does not change the SDK in any other way!
-$globals['MAX_LOCK_TIME'] = 9;
+# Don't forget 0 means infinite!
+$globals['MAX_LOCK_TIME'] = 0;
