@@ -13,6 +13,7 @@ class Main
             
             if (!Core.isAlreadyRunning(path, "lock.txt"))
             {
+                Debug.println("Debug mode enabled.");
                 SocketListener socketListener = new SocketListener();
                 socketListener.start();
                 System.out.println("started the socket listener");
