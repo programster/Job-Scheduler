@@ -11,7 +11,6 @@ class SchedulerClient
 {
     private static $ATTEMPTS_LIMIT = 100;
     private static $ATTEMPT_TIMEOUT = 2; // seconds to wait before connection attempt times out
-    private static $ACK_MESSAGES = false; // Set this to true if we are configured to ack every msg
     
     // buffer size of socket connection. A large number is required when tasks have lots of 
     // dependencies, or when fetching get_info.
@@ -44,13 +43,13 @@ class SchedulerClient
      * Accessor for the scheduler instance (singleton)
      * @param String $host - the url of where the scheduler is
      * @param int $port - the port to connect on.
-     * @return SchedulerCommunicator
+     * @return SchedulerClient
      */
     public static function getInstance($host, $port, $queueName)
     {
         if (self::$s_instance == null)
         {
-            self::$s_instance = new SchedulerCommunicator($host, $port, $queueName);
+            self::$s_instance = new SchedulerClient($host, $port, $queueName);
         }
         
         return self::$s_instance;
@@ -239,7 +238,7 @@ class SchedulerClient
         
         do
         {
-            $connected = socket_connect($this->m_socket, $this->m_host, $this->m_port);
+            $connected = socket_connect($this->m_socket, $this->m_address, $this->m_port);
             
             if (!$connected)
             {
@@ -255,7 +254,7 @@ class SchedulerClient
                 {
                     $errorMsg = 
                         "Failed to make socket connection " . PHP_EOL .
-                        "host: [" . $this->m_host . "] " . PHP_EOL .
+                        "host: [" . $this->m_address . "] " . PHP_EOL .
                         "total time waited: [" . time() - $timeStart . "]" . PHP_EOL .
                         "socket errors: " . PHP_EOL . 
                         print_r($socketErrors, true) . PHP_EOL;
@@ -320,13 +319,6 @@ class SchedulerClient
         {
             # PHP_NORMAL_READ indicates end reading on newline
             $serverMessage = socket_read($this->m_socket, self::$BUFFER_SIZE, PHP_NORMAL_READ);
-            
-            if (self::$ACK_MESSAGES)
-            {
-                $ack = "ack" . PHP_EOL;
-                socket_write($this->m_socket, $ack, strlen($ack));
-            }
-            
             $response = json_decode($serverMessage, $arrayForm=true);
         }
         
