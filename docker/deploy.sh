@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 # ensure running bash
 if ! [ -n "$BASH_VERSION" ];then
     echo "this is not bash, calling self with bash....";
