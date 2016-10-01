@@ -3,13 +3,15 @@
  * pools then please use the SocketThreadPoolHandler object instead.
  */
 
+import java.net.Socket;
+
 public class SocketConnectionHandler extends Thread
 {
     private SocketConnection m_connection;
     
     public SocketConnectionHandler(Socket socket)
     {
-        m_connection = new SocketConnection(socket);   
+        m_connection = new SocketConnection(socket);
     }
     
     
