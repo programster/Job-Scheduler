@@ -234,7 +234,7 @@ public class TaskQueue
                 
                 if 
                 (
-                    Settings.MAX_LOCK_TIME() != null // null means we can have infinite lock
+                    Settings.MAX_LOCK_TIME() != 0 // 0 means we can have infinite lock
                     && age > (Settings.MAX_LOCK_TIME() * 1000) // lock time setting in secs not ms
                 ) 
                 {

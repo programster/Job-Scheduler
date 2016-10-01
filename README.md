@@ -47,13 +47,12 @@ docker run \
 ```
 
 ### DEBUG
-
-Specify  to turn on debugging mode. Debugging mode will result in a lot of extra console output.
+Toggles debugging mode on/off. Debugging mode will result in a lot of extra console output.
 * **Default:** off
-* **Example Usage:** `DEBUG=1`
+* **Example Usage:** `DEBUG=true`
 
 ### USE_THREAD_POOL
-Specify in order to use a pool of threads that get re-used to handle connections, instead of spawning 1 new thread for each incomming connection.
+Set this variable to true in order to use a pool of threads that get re-used to handle connections, instead of spawning 1 new thread for each incomming connection.
 
 * **Default:** false.
 * **Example Usage:** `USE_THREAD_POOL=true`
@@ -67,9 +66,9 @@ Specify the number of threads you want in your thread pool to handle requests. T
 
 
 ### MAX_LOCK_TIME
-Specify the maximum amount of time that a worker can have a task "checked out" before it is considered lost and the task will be unlocked for other workers to grab. By default there is no timeout and the task will be considered locked until the either the socket connection is lost, or the worker comes back and says it has been completed.
+Specify the maximum amount of time (in seconds) that a worker can have a task "checked out" before it is considered lost and the task will be unlocked for other workers to grab. By default there is no timeout and the task will be considered locked until the either the socket connection is lost, or the worker comes back and says it has been completed.
 
-* **Default:** `null` (wait forever)
+* **Default:** `0` (infinite)
 
 ### SOCKET_PORT
 Specify the socket you want the scheduler to listen on for requests.

@@ -56,7 +56,7 @@ public class Settings
     // as having timed out and will be given to something else to take care of.
     public static long MAX_LOCK_TIME()
     {
-        long maxLockTime = null;
+        long maxLockTime = 0;
         
         if (System.getenv("MAX_LOCK_TIME") != null) 
         {
