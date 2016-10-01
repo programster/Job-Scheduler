@@ -61,36 +61,6 @@ public class SocketConnection
         // requires responses to end in an endline to mark the end.
         out.println(responseString);
         out.flush();
-
-        // Wait for the client to ack the message recieved
-        if (Settings.ACK_MESSAGES)
-        {
-            System.out.println("Waiting for client to ack the message");
-            int waitTime = 0;
-            int maxWaitTime = Settings.MAX_ACK_WAIT * 1000;
-
-            try
-            {
-                while (in.available() == 0 && waitTime < maxWaitTime)
-                {
-                    try 
-                    {
-                        waitTime += 100;
-                        System.out.println("sleeping");
-                        Thread.sleep(100);
-                    } 
-                    catch (InterruptedException ex) 
-                    {
-                        System.out.println("Failed to sleep");
-                    }
-                }
-            }
-            catch(Exception e)
-            {
-
-            }
-        }
-        
     }
     
     
