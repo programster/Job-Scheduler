@@ -37,7 +37,7 @@ public class HandlerLogic
      * @param String clientMsg - the message that was passed to us.
      * @return JsonObject
      */
-    private static void processMessage(String clientMsg)
+    private static void processMessage(String clientMsg, SocketConnection clientSocket)
     {
         Debug.println("processing client message: " + clientMsg);
         JsonObject response = new JsonObject();
