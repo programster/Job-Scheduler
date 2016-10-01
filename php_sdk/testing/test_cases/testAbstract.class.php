@@ -23,7 +23,7 @@ abstract class TestAbstract
         
         if ($this->m_scheduler == null)
         {
-            $this->m_scheduler = new SchedulerClient(
+            $this->m_scheduler = SchedulerClient::getInstance(
                 $globals['SCHEDULER_ADDRESS'], 
                 $globals['SCHEDULER_PORT'],
                 $globals['SCHEDULER_QUEUE']
@@ -32,8 +32,6 @@ abstract class TestAbstract
         
         return $this->m_scheduler;
     }
-    
-    
     
     
     # Define the message to display if the test was not successful.
@@ -52,6 +50,7 @@ abstract class TestAbstract
     {
         $this->clear_scheduler();
         static::test();
+        $this->m_scheduler->close();
         return $this->m_successful;
     }
     
@@ -104,7 +103,6 @@ abstract class TestAbstract
     }
     
     
-    
     /**
      * Fetches a task from the scheduler and checks if it was the expected one. If not, then this
      * marks the test as a failure.
@@ -145,7 +143,6 @@ abstract class TestAbstract
         
         return $result;
     }
-    
     
     
     /**
