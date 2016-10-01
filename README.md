@@ -5,15 +5,37 @@ This project is a queuing system (like [beanstalkd](https://kr.github.io/beansta
 ### Why Java?
 Java provided the easiest way to program whilst achieving the desired performance with its multi-threading capabilities.
 
-## Installation and Setup (Docker)
-This project makes use of docker to make deployment incredibly simple and easy. This should be able to be deployed to any docker compatible host.
+## Quickstart
+[Docker](https://www.docker.com/) users can run the command below to deploy their own job scheduler.
+
+```
+docker run -d \
+-e "ADDRESS=172.17.0.2" \
+--name="scheduler" \
+programster/job-scheduler
+```
+
+The following commands can be used to update and re-deploy
+```
+docker pull programster/job-scheduler
+docker kill scheduler
+
+docker run -d \
+-e "ADDRESS=172.17.0.2" \
+--name="scheduler" \
+programster/job-scheduler
+```
+
+
+## Build Your Own Docker Image
+If you don't want to use the [publicly available image](https://hub.docker.com/r/programster/job-scheduler/), you can build your own from this project by following the steps below:
 * Navigate to the "docker" folder at the top of the source tree and run `bash build.sh`.
-* Start the container by executing `bash deploy.sh` which will start the program on port 3901, but obviously you can use your own docker startup command to have the service listen to and report on any port that you desire.
+* Start the container by executing `bash deploy.sh`
 
-## Configuring With Environment Variables
-As this tool is built to be easily deployed through Docker, the settings can be configured through ENVIRONMENT variables. That way you can use the publicly available docker image and change the settings through specifying ENVIRONMENT variables, rather than having to change the settings in the source code and then build your own custom image.
+## Configuration/Settings
+All of the settings can be configured through environment variables to make the project "docker friendly". If you are not using Docker, you can just edit the settings file and recompile the Java application with the script provided.
 
-For example:
+Environment variables for docker containers are specified with `-e` as shown below:
 
 ```
 docker run -d \
