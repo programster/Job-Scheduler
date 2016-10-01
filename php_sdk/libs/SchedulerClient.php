@@ -3,26 +3,57 @@
 
 /**
  * This is a communicator (amazon calls it an SDK) that allows us to easily interface with the 
- * scheduler API without having to look details up.
+ * scheduler API without having to look details up. This uses a persistent TCP socket to send 
+ * all requests over and should be closed when finished.
  */
 
 class SchedulerClient
 {
+    private static $ATTEMPTS_LIMIT = 100;
+    private static $ATTEMPT_TIMEOUT = 2; // seconds to wait before connection attempt times out
+    private static $ACK_MESSAGES = false; // Set this to true if we are configured to ack every msg
+    
+    // buffer size of socket connection. A large number is required when tasks have lots of 
+    // dependencies, or when fetching get_info.
+    //10485760 = 10 MiB
+    private static $BUFFER_SIZE = 10485760; 
+    
     private $m_address;
     private $m_port;
     private $m_queueName;
-
+    private $m_socket; # the socket connection
+    
+    private static $s_instance = null;
+    
     /**
      * Construct the communicator so that we can interface with the scheduler.
      * @param String $address - the url of where the scheduler is
      * @param int $port - the port to connect on.
      * @param string $queueName - the name of the queue we will put tasks into etc.
      */
-    public function __construct($address, $port, $queueName)
+    private function __construct($address, $port, $queueName)
     {
         $this->m_address = $address;
         $this->m_port = $port;
         $this->m_queueName = $queueName;
+        $this->m_socket = null;
+    }
+    
+    
+    /**
+     * Accessor for the scheduler instance (singleton)
+     * @param String $host - the url of where the scheduler is
+     * @param int $port - the port to connect on.
+     * @return SchedulerCommunicator
+     */
+    public static function getInstance($host, $port, $queueName)
+    {
+        if (self::$s_instance == null)
+        {
+            self::$s_instance = new SchedulerCommunicator($host, $port, $queueName);
+        }
+        
+        return self::$s_instance;
     }
     
     
@@ -46,7 +77,7 @@ class SchedulerClient
         {
             $request['dependencies'] = $dependencies;
         }
-
+        
         $request['task_name'] = $name;
         $request['extra_info'] = $context;
         
@@ -55,7 +86,7 @@ class SchedulerClient
             $priority = intval($priority);
             $request['priority'] = $priority;
         }
-
+        
         $responseArray = $this->sendRequest($request);
         
         $addTaskResponse = new AddTaskResponse($responseArray);
@@ -68,7 +99,7 @@ class SchedulerClient
         
         return $addTaskResponse->getTaskId();
     }
-
+    
     
     /**
      * Fetches a task from the scheduler.
@@ -87,7 +118,7 @@ class SchedulerClient
         
         $responseArray = $this->sendRequest($request);
         $getTaskResponse = new GetTaskResponse($responseArray);
-
+        
         if ($getTaskResponse->isOk())
         {
             $task = $getTaskResponse->getTask();
@@ -104,8 +135,8 @@ class SchedulerClient
         
         return $task;
     }
-
-
+    
+    
     /**
      * Mark a task as completed so that other tasks that rely on it being finished can now be 
      * made available.
@@ -130,8 +161,8 @@ class SchedulerClient
             throw new Exception($err_msg);
         }
     }
-
-
+    
+    
     /**
      * Reject a task that was given to us.
      * @param int $taskId
@@ -158,8 +189,8 @@ class SchedulerClient
             throw new Exception($err);
         }
     }
-
-
+    
+    
     /**
      * Fetches information about the schedulers "state". This includes information about 
      * all the tasks that are available, being-computed, or waiting for other tasks to finish.
@@ -175,87 +206,56 @@ class SchedulerClient
         $getInfoResponse = new GetInfoResponse($responseArray);
         return $getInfoResponse;
     }
-
-
+    
+    
     /**
-     * Helper function that sends a request to the scheduler.
-     * @param $request - name/value pairs to send to the scheduler
-     * @return Array $response - the response from the scheduler in name/value pairs
+     * Connect to the job scheduler with a TCP Socket.
+     * @throws Exception
      */
-    private function sendRequest($request)
+    private function connect()
     {
-        $request['queue_name'] = $this->m_queueName;
-        $response = self::sendTcpRequest($this->m_address, $this->m_port, $request);
-        return $response;
-    }
-
-
-    /**
-     * This is the socket "equivalent" to the sendApiRequest function. However unlike
-     * that funciton it does not require the curl library to be installed, and will try to
-     * send/recieve information over a direct socket connection.
-     *
-     * @param Array $request - map of name/value pairs to send.
-     * @param string $host - the host wish to send the request to.
-     * @param int $port - the port number to make the connection on.
-     * @param int $bufferSize - optionally define the size (num chars/bytes) of the buffer. If this
-     *                     is too small your information can get cut off, causing errors.
-     *                     10485760 = 10 MiB
-     * @param int $timeout - (optional, default 2) the number of seconds before connection attempt 
-     *                       times out.
-     * @param int $attempts_limit - (optional, default 5) the number of failed connection attempts to 
-     *                         make before giving up.
-     * @param String $ack - the acknowledgement to send back to state that message recieved.
-     * @return Array - the response from the api in name/value pairs.
-     */
-    public static function sendTcpRequest($host, 
-                                          $port, 
-                                          $request,
-                                          $bufferSize=10485760, 
-                                          $timeout=2, 
-                                          $attempts_limit=100,
-                                          $ack = "ack")
-    {
-        # The PHP_EOL endline is so that the reciever knows that is the end of the message with
-        # PHP_NORMAL_READ.
-        $request_string = json_encode($request) . PHP_EOL;
+        if ($this->m_socket != null)
+        {
+            $errMsg = "Attempting to connect to scheduler when there is already a connection";
+            throw new Exception($errMsg);
+        }
         
         $protocol = getprotobyname('tcp');
-        $socket = socket_create(AF_INET, SOCK_STREAM, $protocol);
-        
+        $this->m_socket = socket_create(AF_INET, SOCK_STREAM, $protocol);
+
         # stream_set_timeout DOES NOT work for sockets created with socket_create or socket_accept.
         # http://www.php.net/manual/en/function.stream-set-timeout.php
         $socket_timout_spec = array(
-            'sec'  =>$timeout,
+            'sec'  => self::$ATTEMPT_TIMEOUT,
             'usec' => 0
         );
-        
-        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, $socket_timout_spec);
-        socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, $socket_timout_spec);
-        
+
+        socket_set_option($this->m_socket, SOL_SOCKET, SO_RCVTIMEO, $socket_timout_spec);
+        socket_set_option($this->m_socket, SOL_SOCKET, SO_SNDTIMEO, $socket_timout_spec);
+
         $attempts_made = 0;
         $socketErrors = array();
         $timeStart = time();
         
         do
         {
-            $connected = socket_connect($socket, $host, $port);
+            $connected = socket_connect($this->m_socket, $this->m_host, $this->m_port);
             
             if (!$connected)
             {
-                $socket_error_code   = socket_last_error($socket);
+                $socket_error_code   = socket_last_error($this->m_socket);
                 $socket_error_string = socket_strerror($socket_error_code);
                 $socketErrors[] = $socket_error_string;
-                
+
                 # socket_last_error does not clear the last error after having fetched it, have to 
                 # do this manually
                 socket_clear_error();
                 
-                if ($attempts_made == $attempts_limit)
+                if ($attempts_made == self::$ATTEMPTS_LIMIT)
                 {
                     $errorMsg = 
                         "Failed to make socket connection " . PHP_EOL .
-                        "host: [" . $host . "] " . PHP_EOL .
+                        "host: [" . $this->m_host . "] " . PHP_EOL .
                         "total time waited: [" . time() - $timeStart . "]" . PHP_EOL .
                         "socket errors: " . PHP_EOL . 
                         print_r($socketErrors, true) . PHP_EOL;
@@ -270,28 +270,65 @@ class SchedulerClient
                 sleep(1);
             }
         } while (!$connected); # 110 = timeout error code
+    }
+    
+    
+    /**
+     * Close all connections to the scheduler.
+     */
+    public function close()
+    {
+        $request = array('action' => 'close');
+        $this->sendRequest($request, $expectResponse=false);
+        socket_shutdown($this->m_socket, 2); # 0=shut read, 1=shut write, 2=both
+        socket_close($this->m_socket);
+        $this->m_socket = null;
+    }
+    
+    
+    /**
+     * Sends a request to the scheduler using our persistant socket. If the socket
+     * doesn't exist yet, then we instantiate it.
+     * @param Array $request - map of name/value pairs to send.
+     * @param bool $expectResponse - manually set to false if you are not expecting a response
+     * @return Array - the response from the api in name/value pairs.
+     */
+    private function sendRequest($request, $expectResponse=true)
+    {
+        $response = null;
+        
+        # The PHP_EOL endline is so that the reciever knows that is the end of the message with
+        # PHP_NORMAL_READ.
+        $request_string = json_encode($request) . PHP_EOL;
+        
+        ## connect
+        if ($this->m_socket == null)
+        {
+            print "connecting to scheduler" . PHP_EOL;
+            $this->connect();
+        }
         
         /* @var $socket Socket */
-        $wroteBytes = socket_write($socket, $request_string, strlen($request_string));
+        $wroteBytes = socket_write($this->m_socket, $request_string, strlen($request_string));
         
         if ($wroteBytes === false)
         {
             throw new Exception('Failed to write request to socket.');
         }
         
-        # PHP_NORMAL_READ indicates end reading on newline
-        $serverMessage = socket_read($socket, $bufferSize, PHP_NORMAL_READ);
-        
-        if ($ack != null && $ack != "")
+        if ($expectResponse)
         {
-            $ack .= PHP_EOL;
-            socket_write($socket, $ack, strlen($ack));
+            # PHP_NORMAL_READ indicates end reading on newline
+            $serverMessage = socket_read($this->m_socket, self::$BUFFER_SIZE, PHP_NORMAL_READ);
+            
+            if (self::$ACK_MESSAGES)
+            {
+                $ack = "ack" . PHP_EOL;
+                socket_write($this->m_socket, $ack, strlen($ack));
+            }
+            
+            $response = json_decode($serverMessage, $arrayForm=true);
         }
-        
-        
-        $response = json_decode($serverMessage, $arrayForm=true);
-        socket_shutdown($socket, 2); # 0=shut read, 1=shut write, 2=both
-        socket_close($socket);
         
         return $response;
     }
