@@ -294,6 +294,7 @@ class SchedulerClient
      */
     private function sendRequest($request, $expectResponse=true)
     {
+        $request['queue_name'] = $this->m_queueName;
         $response = null;
         
         # The PHP_EOL endline is so that the reciever knows that is the end of the message with
@@ -303,7 +304,6 @@ class SchedulerClient
         ## connect
         if ($this->m_socket == null)
         {
-            print "connecting to scheduler" . PHP_EOL;
             $this->connect();
         }
         
