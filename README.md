@@ -1,6 +1,22 @@
 Job-Scheduler
 =============
-This project is a queuing system (like [beanstalkd](https://kr.github.io/beanstalkd/)) that focuses on dependencies between tasks. All responses are in JSON format. The application prioritizes tasks based on how many other tasks require it to be completed before they can start. This prevents bottlenecks, but means that this is not a FIFO style queuing program, but one built for overall speed.
+This project is a queuing system similar to [beanstalkd](https://kr.github.io/beanstalkd/)), but with some key improvements. Tasks can have depend on other tasks, and this queuing system will not allow a task to be taken unless all of its dependencies have been completed. All requests/responses are in JSON format. The application prioritizes tasks based on how many other tasks require it to be completed before they can start. This prevents bottlenecks, but means that this is not a FIFO style queuing program, but one built for overall speed.
+
+## Key Features
+* Dependency Management and enforcement.
+* Named Queues for isolation and simplicity.
+* Task prioritization.
+* Scheduling built for high parallelization.
+* Ludicrously fast (all in-memory and multithreaded).
+* JSON request/responses for easy integration.
+* SDK for PHP users to easily integrate.
+
+## Planned Features
+* Security/Authentication
+* Groups with the ability to "drop" a group of tasks
+* Hash based IDs (similar to git)
+* Web UI built into docker image for monitoring/metrics.
+
 
 ### Why Java?
 Java provided the easiest way to program whilst achieving the desired performance with its multi-threading capabilities.
