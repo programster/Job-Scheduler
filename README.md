@@ -17,9 +17,9 @@ This project is a queuing system similar to [beanstalkd](https://kr.github.io/be
 * Hash based IDs (similar to git)
 * Web UI built into docker image for monitoring/metrics.
 
-## Requirements
-* 2+ vCPUs
-* 512MB+ of RAM
+## Minimum Requirements
+* 2 vCPUs
+* 512MB of RAM
 
 
 ## Quickstart
