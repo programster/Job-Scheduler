@@ -9,13 +9,15 @@ This project is a queuing system similar to [beanstalkd](https://kr.github.io/be
 * Scheduling built for high parallelization.
 * Ludicrously fast (all in-memory and multithreaded).
 * JSON request/responses for easy integration.
-* SDK for PHP users to easily integrate.
+* [SDK for PHP users](https://packagist.org/packages/irap/job-scheduler) to easily integrate.
 
 ## Planned Features
+* Web UI built into docker image for monitoring/metrics.
+* Python SDK
+* Hash based IDs (similar to git)
 * Security/Authentication
 * Groups with the ability to "drop" a group of tasks
-* Hash based IDs (similar to git)
-* Web UI built into docker image for monitoring/metrics.
+
 
 ## Minimum Requirements
 * 2 vCPUs
