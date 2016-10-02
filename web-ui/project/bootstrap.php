@@ -6,4 +6,4 @@
 # should be replaces by making use of the autoloader.
 
 require_once(__DIR__ . '/../settings.php');
-require_once(__DIR__ . '/vendor/audoload.php'); # autoloader requires core to work.
+require_once(__DIR__ . '/vendor/autoload.php'); # autoloader requires core to work.
