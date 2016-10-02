@@ -1,0 +1,6 @@
+{
+    "require": {
+        "irap/job-scheduler": "1.0.0",
+        "irap/autoloader": "1.0.*"
+    }
+}

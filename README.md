@@ -112,5 +112,8 @@ Java provided the easiest way to program whilst achieving the desired performanc
 ## Reason For Development
 I needed a queuing system that would take care of scheduling tasks for me, based on their dependencies, whilst being able to handle a large number of simultaneous requests. I found many queuing systems on the Internet, but none that had a concept of dependencies. Initially this project was written in PHP for ease of development, but was moved to Java for the the performance and multi-threaded capabilities. Other languages could have been used, but Java has a similar syntax to PHP, and is fairly easy to build multi-threaded applications with.
 
+## Testing And Contributing
+Feel free to use the `testing` section to benchmark how well this application works on your hardware. Before running any tests, you will need to run a `composer update`. If you wish to contribute something new to this project, then please add an appropriate test for that feature with the merge request.
+
 ## Licensing Information
 This project currently uses the Google-gson 2.2.4 library and has been fully included with licensing in the libs folder. That part of the project uses Apache 2.0 license which is why this project uses the GPL v3.0 license which is stated to be compatible. The reason I chose this license is on the understanding that it expects extensions/updates of the software to also be made open source. It appears that open source licenses have become extremely complicated, and dull the joys of developing open-source software for others to use.

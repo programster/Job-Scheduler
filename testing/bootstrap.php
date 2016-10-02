@@ -8,15 +8,11 @@
  */
 
 require_once(__DIR__ . '/settings.php');
-require_once(__DIR__ . '/libs/auto_loader.class.php');
-require_once(__DIR__ . '/libs/SchedulerClient.php');
+require_once(__DIR__ . '/vendor/autoload.php');
 
 $directories = array(
     __DIR__,
-    __DIR__ . '/libs/',
-    __DIR__ . '/responses/',
-    __DIR__ . '/testing',
-    __DIR__ . '/testing/test_cases'
+    __DIR__ . '/tests'
 );
 
-$autoloader = new Autoloader($directories);
+$autoloader = new \iRAP\Autoloader\Autoloader($directories);
