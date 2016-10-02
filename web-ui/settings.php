@@ -13,4 +13,4 @@ $globals['SCHEDULER_ADDRESS'] = "scheduler.irap-dev.org";
 # Define which port the scheduler is listening on.
 $globals['SCHEDULER_PORT'] = 3901;
 
-$globals['SCHEDULER_QUEUE'] = "default"
+$globals['SCHEDULER_QUEUE'] = "php_sdk_testing";
