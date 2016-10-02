@@ -149,7 +149,7 @@ function main()
 {
     global $globals;
     
-    $scheduler = new iRAP\JobScheduler\SchedulerClient(
+    $scheduler = iRAP\JobScheduler\SchedulerClient::getInstance(
         $globals['SCHEDULER_ADDRESS'], 
         $globals['SCHEDULER_PORT'],
         $globals['SCHEDULER_QUEUE']
@@ -157,14 +157,12 @@ function main()
     
     $response = $scheduler->getInfo();
     
-    if ($response['result'] == 'success')
+    if ($response->isOk())
     {
-        $info = $response['cargo'];
-        
-        $tasks            = $info['tasks'];
-        $available_tasks  = $info['available_tasks'];
-        $dependencies     = $info['dependencies'];
-        $processing_tasks = $info['processing_tasks'];
+        $tasks            = $response->getTasks();
+        $available_tasks  = $response->getAvailableTasks();
+        $dependencies     = $response->getWaitingTasks();
+        $processing_tasks = $response->getProcessingTasks();
         
         print display_avaialable_tasks($available_tasks, $dependencies, $tasks);
         print display_processing_tasks($processing_tasks, $dependencies, $tasks);
@@ -172,7 +170,7 @@ function main()
     }
     else
     {
-        print "ERROR - Failed to connect to the scheduler: " . $response['message'];
+        print "ERROR - Failed to connect to the scheduler: " . $response->getError();
     }
 }
 
