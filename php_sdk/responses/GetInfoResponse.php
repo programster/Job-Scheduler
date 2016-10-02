@@ -4,6 +4,8 @@
  * 
  */
 
+namespace iRAP\JobScheduler\Responses;
+
 
 class GetInfoResponse extends BaseResponse
 {

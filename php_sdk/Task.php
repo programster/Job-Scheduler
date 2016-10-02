@@ -4,6 +4,9 @@
  * This is the task that is fetched from a get_task request. 
  */
 
+namespace iRAP\JobScheduler;
+
+
 class Task
 {    
     private $m_id;

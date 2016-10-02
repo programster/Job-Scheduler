@@ -4,6 +4,9 @@
  * 
  */
 
+namespace iRAP\JobScheduler\Responses;
+
+
 class BaseResponse
 {
     protected $m_responseArray;

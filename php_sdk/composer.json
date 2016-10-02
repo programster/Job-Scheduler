@@ -19,7 +19,8 @@
     },
     "autoload": {
         "psr-4": {
-            "iRAP\\JobScheduler\\": ""
+            "iRAP\\JobScheduler\\": "",
+            "iRAP\\JobScheduler\\Responses\\": "responses/",
         }
     }
 }

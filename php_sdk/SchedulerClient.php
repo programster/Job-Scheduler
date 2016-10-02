@@ -1,11 +1,13 @@
 <?php
 
-
 /**
- * This is a communicator (amazon calls it an SDK) that allows us to easily interface with the 
- * scheduler API without having to look details up. This uses a persistent TCP socket to send 
- * all requests over and should be closed when finished.
+ * This is a client for interfacing with the scheduler's API.
+ * This uses a persistent TCP socket to send all requests 
+ * which should be closed when finished.
  */
+
+namespace iRAP\JobScheduler;
+
 
 class SchedulerClient
 {

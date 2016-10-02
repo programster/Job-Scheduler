@@ -4,6 +4,9 @@
  * 
  */
 
+namespace iRAP\JobScheduler\Responses;
+
+
 class AddTaskResponse extends BaseResponse
 {
     public function getTaskId()

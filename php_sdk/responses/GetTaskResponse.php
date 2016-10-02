@@ -4,6 +4,9 @@
  * 
  */
 
+namespace iRAP\JobScheduler\Responses;
+
+
 class GetTaskResponse extends BaseResponse
 {
     public function getTask()
