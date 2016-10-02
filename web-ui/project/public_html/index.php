@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../libs/bootstrap.php');
+require_once(__DIR__ . '/../bootstrap.php');
 
 /*
  * Due to the fact that each process can have multiple dependencies, most javascript charting 
@@ -15,14 +15,13 @@ function display_avaialable_tasks(Array $available_tasks, Array $dependencies, A
     
     if (count($available_tasks) > 0)
     {
-
         $names = array();
-
+        
         foreach ($available_tasks as $task_id)
         {
             $task = $tasks[$task_id];
             $name = $task['name'];
-
+            
             if (isset($names[$name]))
             {
                 $names[$name]++;
@@ -32,13 +31,13 @@ function display_avaialable_tasks(Array $available_tasks, Array $dependencies, A
                 $names[$name] = 1;
             }
         }
-
+        
         $tableRows = '';
         foreach ($names as $task_name => $count)
         {
             $tableRows .= '<tr><td>' . $task_name . '</td><td>' . $count . '</td></tr>';
         }
-
+        
         $html .= 
             '<table border=1 padding="5px">' .
                 '<tr>' .
@@ -70,12 +69,12 @@ function display_processing_tasks(Array $processing_tasks, Array $dependencies, 
     if (count($processing_tasks) > 0)
     {
         $names = array();
-    
+        
         foreach ($processing_tasks as $processing_task_id)
         {
             $processing_task = $tasks[$processing_task_id];
             $name = $processing_task['name'];
-
+            
             if (isset($names[$name]))
             {
                 $names[$name]++;
@@ -85,13 +84,13 @@ function display_processing_tasks(Array $processing_tasks, Array $dependencies, 
                 $names[$name] = 1;
             }
         }
-
+        
         $tableRows = '';
         foreach ($names as $task_name => $count)
         {
             $tableRows .= '<tr><td>' . $task_name . '</td><td>' . $count . '</td></tr>';
         }
-
+        
         $html .= 
             '<table border=1 padding="5px">' .
                 '<tr>' .
@@ -149,11 +148,15 @@ function display_dependencies(Array $dependencies, Array $tasks)
 function main()
 {
     global $globals;
-
-    $scheduler_communicator = new SchedulerCommunicator($globals['SCHEDULER_ADDRESS'], 
-                                                        $globals['SCHEDULER_PORT']);
-    $response = $scheduler_communicator->getInfo();
-
+    
+    $scheduler = new iRAP\JobScheduler\SchedulerClient(
+        $globals['SCHEDULER_ADDRESS'], 
+        $globals['SCHEDULER_PORT'],
+        $globals['SCHEDULER_QUEUE']
+    );
+    
+    $response = $scheduler->getInfo();
+    
     if ($response['result'] == 'success')
     {
         $info = $response['cargo'];
