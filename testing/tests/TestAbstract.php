@@ -23,7 +23,7 @@ abstract class TestAbstract
         
         if ($this->m_scheduler == null)
         {
-            $this->m_scheduler = SchedulerClient::getInstance(
+            $this->m_scheduler = \iRAP\JobScheduler\SchedulerClient::getInstance(
                 $globals['SCHEDULER_ADDRESS'], 
                 $globals['SCHEDULER_PORT'],
                 $globals['SCHEDULER_QUEUE']

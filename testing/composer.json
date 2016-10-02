@@ -1,6 +1,6 @@
 {
     "require": {
-        "irap/job-scheduler": "dev-master",
-        "irap/autoloader": "^1.0"
+        "irap/job-scheduler": "1.0.0",
+        "irap/autoloader": "1.0.*"
     }
 }

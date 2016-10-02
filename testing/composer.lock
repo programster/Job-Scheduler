@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3cfe5e6e61c769dec713bce574c6ed85",
-    "content-hash": "a0b648812ee945c88668a7b3fe343b53",
+    "hash": "92eb5c8fd6397835d4848ef4db38e46d",
+    "content-hash": "4f359fac7dcddaa702b4286793bc99bb",
     "packages": [
         {
             "name": "irap/autoloader",
@@ -92,16 +92,16 @@
         },
         {
             "name": "irap/job-scheduler",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/iRAP-software/package-scheduler-sdk.git",
-                "reference": "2dfc81da86c172b3992d62ec34adc2c396d786d2"
+                "reference": "7b8225043412114ee254b7fe751d52b73b5312af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/iRAP-software/package-scheduler-sdk/zipball/2dfc81da86c172b3992d62ec34adc2c396d786d2",
-                "reference": "2dfc81da86c172b3992d62ec34adc2c396d786d2",
+                "url": "https://api.github.com/repos/iRAP-software/package-scheduler-sdk/zipball/7b8225043412114ee254b7fe751d52b73b5312af",
+                "reference": "7b8225043412114ee254b7fe751d52b73b5312af",
                 "shasum": ""
             },
             "require": {
@@ -134,15 +134,13 @@
                 "queue",
                 "scheduler"
             ],
-            "time": "2016-10-02 15:25:16"
+            "time": "2016-10-02 15:47:52"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "irap/job-scheduler": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
