@@ -43,9 +43,9 @@ public class Settings
     {
         int threadPoolSize = Core.GetNumCores();;
         
-        if (System.getenv("USE_THREAD_POOL") != null) 
+        if (System.getenv("THREAD_POOL_SIZE") != null)
         {
-            threadPoolSize = Integer.parseInt(System.getenv("USE_THREAD_POOL"));
+            threadPoolSize = Integer.parseInt(System.getenv("THREAD_POOL_SIZE"));
         }
         
         return threadPoolSize;
