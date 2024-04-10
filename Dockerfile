@@ -5,33 +5,16 @@
 
 # This is a customized version of ubuntu 14 that allows things like ssh server etc to run
 # http://phusion.github.io/baseimage-docker/
-FROM ubuntu:14.04
+FROM debian:12
+
+RUN apt-get update && apt-get dist-upgrade -y
+
+RUN apt-get install -y default-jdk vim cron
 
 # Set correct environment variables.
 ENV HOME /root
 
 #============ Normal instructions below this line=====================
-
-# Add repo for java
-RUN apt-get update
-RUN apt-get install python-software-properties software-properties-common -y
-RUN add-apt-repository ppa:webupd8team/java -y
-
-# Upgrade the system
-RUN apt-get update
-RUN sudo apt-get dist-upgrade -y
-
-# This prevents the acceptance of the licence agreement preventing java install
-RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-
-# Install java 7
-RUN apt-get install oracle-java8-installer -y
-
-# This is strictly not necessary but sure makes debugging easier.
-RUN apt-get install vim -y
-
-# Install cron service for keeping the container open
-RUN apt-get install cron -y
 
 
 # Add our java source files (will build based on these later)

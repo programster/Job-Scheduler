@@ -19,16 +19,15 @@ cd $SCRIPTPATH
 ## Settings ##
 ##############
 # Change REGISTRY to "" if you dont have a registry.
-REGISTRY="programster"
-PROJECT_NAME="job-scheduler"
+IMAGE_NAME="job-scheduler"
+CONTAINER_NAME="scheduler"
 
-CONTAINER_IMAGE="$REGISTRY/$PROJECT_NAME"
 
-docker kill $PROJECT_NAME
-docker rm $PROJECT_NAME
+docker kill $IMAGE_NAME
+docker rm $IMAGE_NAME
 
 docker run -d \
--p 3901:3901 \
--e "ADDRESS=172.17.0.2" \
---name="$PROJECT_NAME" \
-$CONTAINER_IMAGE
+  -p 3901:3901 \
+  -e "ADDRESS=172.17.0.2" \
+  --name="$CONTAINER_NAME" \
+  $IMAGE_NAME

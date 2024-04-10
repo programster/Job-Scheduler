@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 public class SocketListener extends Thread
 {
-    private static SocketListener s_instance;
     private ServerSocket m_socket;
     
     // if we are using a thread pool, this is what will hold them.
@@ -94,8 +93,7 @@ public class SocketListener extends Thread
     
     /**
      * Pushes the provided socket onto the handler in the thread pool handler that is handling the
-     * least number of sockets. 
-     * @param Socket - the socket we want to push onto a handler.
+     * least number of sockets.
      */
     private void pushSocketToThreadPoolHandler(Socket clientSocket)
     {
@@ -125,7 +123,7 @@ public class SocketListener extends Thread
             }
         }
         
-        // Check that we havent already assigned the socket to a thread that had no work.
+        // Check that we haven't already assigned the socket to a thread that had no work.
         if (!assignedSocket)
         {
             try
@@ -134,7 +132,7 @@ public class SocketListener extends Thread
             }
             catch(Exception e)
             {
-                System.out.println("Somehow minimumhandler never got defined.");
+                System.out.println("Somehow minimumHandler never got defined.");
             }
         }
     }

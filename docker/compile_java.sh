@@ -7,7 +7,7 @@ if ! [ -n "$BASH_VERSION" ];then
     /bin/bash $SCRIPT
     exit
 fi
- 
+
 # This script is responsible for compiling the java source code into a jar
 
 JAR_NAME="scheduler.jar"
