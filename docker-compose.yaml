@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    image: ${DOCKER_IMAGE_NAME}
+    restart: always
+    ports:
+      - "3901:3901"
+    environment:
+      - DEBUG
+      - USE_THREAD_POOL
+      - THREAD_POOL_SIZE
+      - MAX_LOCK_TIME
