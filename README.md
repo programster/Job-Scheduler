@@ -27,9 +27,34 @@ things if required.
 3. Run `docker compose up` to spin up the service.
 
 
+## Testing
+This codebase has a folder for testing at `/testing` that contains some PHP code for testing. Deploy this service using
+docker compose as outlined above, and then pull down the PHP packages with composer install, before then running:
+
+```php
+php test.php
+```
+
+If all goes well, then you should see some output like below:
+
+```
+Running TestTaskTimeout
+Skipping TestTaskTimeout is pointless because MAX_LOCK_TIME is set to infinite
+Running TestDependencies
+Running TestSharedDependencies
+Running TestBlockageRating
+Running TestPriorities
+Running TestMemoryUsage
+Running TestPerformance
+Time taken: 0.25075793266296
+Congratulations! All tests succeeded.
+```
+
+
 ## Planned Features
 * change MAX_LOCK_TIME to DEFAULT_MAX_LOCK_TIME, with the ability for the lock time to be specified on a per-task basis
   as some tasks may expect to take longer than others.
+* Update the testing area to use Docker as well, for a controlled PHP environment.
 * UUID based identifiers
 * [REST](https://www.boxuk.com/insight/creating-a-rest-api-quickly-using-pure-java/) or 
   [gRPC based](https://grpc.io/docs/languages/java/basics/) interfacing rather than direct 
