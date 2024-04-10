@@ -1,6 +1,14 @@
 Job-Scheduler
 =============
-This project is a queuing system similar to [beanstalkd](https://kr.github.io/beanstalkd/)), but with some key improvements. Tasks can have depend on other tasks, and this queuing system will not allow a task to be taken unless all of its dependencies have been completed. All requests/responses are in JSON format. The application prioritizes tasks based on how many other tasks require it to be completed before they can start. This prevents bottlenecks, but means that this is not a FIFO style queuing program, but one built for overall speed.
+This project is a queuing system similar to [beanstalkd](https://kr.github.io/beanstalkd/)), but 
+with some key improvements. It provides [DAG capabilities](https://www.youtube.com/watch?v=1Yh5S-S6wsI), 
+with tasks possibly depending on other tasks. This queuing system will not allow a task to be taken 
+unless all of its dependencies have been completed. All requests/responses are in JSON format. The 
+application prioritizes tasks first based on priority, and then on how many other tasks require it 
+to be completed before they can start. This prevents bottlenecks, but means that this is not a 
+FIFO style queuing program, but one built for overall speed, but still be able to prioritize
+things if required.
+
 
 ## Key Features
 * Dependency Management and enforcement.
@@ -11,11 +19,14 @@ This project is a queuing system similar to [beanstalkd](https://kr.github.io/be
 * JSON request/responses for easy integration.
 * [SDK for PHP users](https://packagist.org/packages/irap/job-scheduler) to easily integrate.
 
+
 ## Planned Features
-* Web UI built into docker image for monitoring/metrics.
-* Python SDK
-* Hash based IDs (similar to git)
+* UUID based identifiers
+* [REST](https://www.boxuk.com/insight/creating-a-rest-api-quickly-using-pure-java/) or 
+  [gRPC based](https://grpc.io/docs/languages/java/basics/) interfacing rather than direct 
+  socket connections.
 * Security/Authentication
+* Separate Web UI service that integrates through for easy visual monitoring/metrics and control.
 * Groups with the ability to "drop" a group of tasks
 
 
@@ -29,23 +40,23 @@ This project is a queuing system similar to [beanstalkd](https://kr.github.io/be
 
 ```
 docker run -d \
--p 3901:3901 \
--e "ADDRESS=172.17.0.2" \
---name="scheduler" \
-programster/job-scheduler
+  -p 3901:3901 \
+  -e "ADDRESS=172.17.0.2" \
+  --name="scheduler" \
+  programster/job-scheduler
 ```
 
 The following commands can be used to update and re-deploy
-```
+```bash
 docker pull programster/job-scheduler
 docker kill scheduler
 docker rm scheduler
 
 docker run -d \
--p 3901:3901 \
--e "ADDRESS=172.17.0.2" \
---name="scheduler" \
-programster/job-scheduler
+  -p 3901:3901 \
+  -e "ADDRESS=172.17.0.2" \
+  --name="scheduler" \
+  programster/job-scheduler
 ```
 
 
@@ -54,6 +65,7 @@ If you don't want to use the [publicly available image](https://hub.docker.com/r
 * Navigate to the "docker" folder at the top of the source tree and run `bash build.sh`.
 * Start the container by executing `bash deploy.sh`
 
+
 ## Configuration/Settings
 All of the settings can be configured through environment variables to make the project "docker friendly". If you are not using Docker, you can just edit the settings file and recompile the Java application with the script provided.
 
@@ -61,10 +73,11 @@ Environment variables for docker containers are specified with `-e` as shown bel
 
 ```
 docker run \
--e "ADDRESS=172.17.0.2" \
--e "USE_THREAD_POOL=true" \
+  -e "ADDRESS=172.17.0.2" \
+  -e "USE_THREAD_POOL=true" \
 ...
 ```
+
 
 ### DEBUG
 Toggles debugging mode on/off. Debugging mode will result in a lot of extra console output.
