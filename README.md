@@ -69,51 +69,10 @@ Congratulations! All tests succeeded.
 * 512MB of RAM
 
 
-## Quickstart
-[Docker](https://www.docker.com/) users can run the command below to deploy their own job scheduler.
-
-```
-docker run -d \
-  -p 3901:3901 \
-  -e "ADDRESS=172.17.0.2" \
-  --name="scheduler" \
-  programster/job-scheduler
-```
-
-The following commands can be used to update and re-deploy
-```bash
-docker pull programster/job-scheduler
-docker kill scheduler
-docker rm scheduler
-
-docker run -d \
-  -p 3901:3901 \
-  -e "ADDRESS=172.17.0.2" \
-  --name="scheduler" \
-  programster/job-scheduler
-```
-
-
-## Build Your Own Docker Image
-If you don't want to use the [publicly available image](https://hub.docker.com/r/programster/job-scheduler/), you can build your own from this project by following the 
-steps below:
-
-* Navigate to the "docker" folder at the top of the source tree and run `bash build.sh`.
-* Start the container by executing `bash deploy.sh`
-
 
 ## Configuration/Settings
-All of the settings can be configured through environment variables to make the project "docker friendly". If you are 
+All of the settings can be configured through environment variables. If you are 
 not using Docker, you can just edit the settings file and recompile the Java application with the script provided.
-
-Environment variables for docker containers are specified with `-e` as shown below:
-
-```
-docker run \
-  -e "ADDRESS=172.17.0.2" \
-  -e "USE_THREAD_POOL=true" \
-...
-```
 
 
 ### DEBUG
@@ -152,16 +111,15 @@ Specify the socket you want the scheduler to listen on for requests.
 * **Default:** `3901`
 
 ### ADDRESS
-Specify the IP to listen on. If not set (default) then the program will default to the pubic IP of this machine.
-If using docker this needs to be `172.17.0.2` instead of the public ip of instance due to the way the networking is set 
-up. You may wish to set this to 127.0.0.1 for security if all your applications are on the same host.
+Optionally specify the IP address to listen on. If not set (default) then the program will default to listening on
+*all* sockets/IPs. This is generally only really useful in non-docker environments if you only wanted to listen 
+on `127.0.0.1` and not listen for outside connections etc.
 
-* **Default:** The Public IP of the server (fetched from somewhere like icanhazip.com)
 * **Example Usage:** `ADDRESS=127.0.0.1`
 
 
 ## Warnings & Limitations
-* This software is developed in a manner that intends to be deployed on a server that has at least two cores or vCPUs. 
+* This software is developed in a manner that intends to be deployed on a server that has at least 2+ vCPUs. 
 * Although it may be able to cope with running on a single-core computer, that should never be a requirement of the 
 * system that restricts the software development in any way.
 * The software holds all tasks in memory, which causes a loss of data if the program exits unexpectedly, such as an 
